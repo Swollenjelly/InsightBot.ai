@@ -66,9 +66,13 @@ def download_youtube_audio(url):
             'preferredcodec': 'mp3',
             'preferredquality': '192',
         }],
+        
         'quiet': False,  # 👈 show full logs
         'noplaylist': True,
     }
+
+    if os.path.exists("cookies.txt"):
+        ydl_opts['cookiefile'] = "cookies.txt"
 
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
