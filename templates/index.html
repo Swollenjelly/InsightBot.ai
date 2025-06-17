@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>InsightBot.ai – YouTube Assistant</title>
+    <style>
+      body {
+        background-color: #121212;
+        font-family: "Segoe UI", sans-serif;
+        color: white;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        padding-top: 60px;
+      }
+
+      .logo {
+        width: 250px;
+      }
+
+      .title {
+        font-size: 35px;
+        font-weight: 700;
+        margin-top: 10px;
+        color: white;
+      }
+
+      .highlight {
+        color: #fe3c3c;
+      }
+
+      form {
+        margin-top: 350px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+      }
+
+      input[type="text"] {
+        width: 400px;
+        max-width: 90%;
+        padding: 12px 20px;
+        font-size: 16px;
+        border: 2px solid #333;
+        border-radius: 20px;
+        background-color: #1e1e1e;
+        color: white;
+        outline: none;
+      }
+
+      button {
+        margin-top: 15px;
+        padding: 10px 25px;
+        font-size: 16px;
+        background-color: #fe3c3c;
+        color: white;
+        border: none;
+        border-radius: 25px;
+        cursor: pointer;
+      }
+
+      button:hover {
+        background-color: #7b0808;
+      }
+
+      .error {
+        color: red;
+        margin-top: 20px;
+      }
+
+      .thumbnail-preview {
+        margin-top: 20px;
+      }
+
+      .thumbnail-img {
+        width: 360px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+      }
+
+      .processing {
+        margin-top: 10px;
+        font-size: 16px;
+        color: #ccc;
+        font-style: italic;
+      }
+      .spinner {
+        border: 4px solid #333;
+        border-top: 4px solid #fe3c3c;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Logo & Title -->
+    <img
+      src="{{ url_for('static', filename='img/logo.png') }}"
+      alt="Logo"
+      class="logo"
+    />
+
+    <p
+      style="text-align: center; color: #ccc; font-size: 15px; margin-top: 40px"
+    >
+      Welcome to <strong>InsightBot.ai</strong> — Paste a YouTube URL and start
+      asking questions instantly!
+    </p>
+
+    {% if thumbnail %}
+    <div class="thumbnail-preview">
+      <img
+        src="{{ thumbnail }}"
+        alt="YouTube Thumbnail"
+        class="thumbnail-img"
+      />
+    </div>
+    <div class="processing">
+      <div class="spinner"></div>
+      <p style="margin-top: 10px">Processing...</p>
+    </div>
+
+    {% endif %}
+
+    <!-- YouTube URL Form -->
+    <form method="POST">
+      <input
+        type="text"
+        name="url"
+        placeholder="Paste your URL here"
+        required
+      />
+      <button type="submit">Submit</button>
+    </form>
+
+    {% if error %}
+    <p class="error">{{ error }}</p>
+    {% endif %} {% if show_processing %}
+    <script>
+      // Auto-redirect after 3 seconds
+      setTimeout(function () {
+        window.location.href = "{{ url_for('process_and_redirect') }}";
+      }, 1000);
+    </script>
+    {% endif %}
+  </body>
+</html>

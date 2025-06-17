@@ -1,0 +1,12 @@
+[
+  {
+    "timestamp": "2025-06-18T00:23:37.627089",
+    "role": "user",
+    "content": "Who are you?"
+  },
+  {
+    "timestamp": "2025-06-18T00:23:40.817156",
+    "role": "bot",
+    "content": "Hi! I'm the assistant from the Techie Talks AI video. In the video, Sree from Shoguni is demonstrating how to create an MCP server using Python's Fast API and the Fast API MCP library. If you have any questions about the video or need help with tech-related topics, feel free to ask! \ud83d\ude0a"
+  }
+]

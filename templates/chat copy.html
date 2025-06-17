@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Chat</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+    <style>
+      .message-row {
+        animation: fadeIn 0.4s ease-in;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .logo {
+        width: 200px;
+        margin: 0 auto;
+        display: block;
+      }
+
+      .bubble {
+        background-color: #d63447;
+        color: white;
+        padding: 10px 15px;
+        border-radius: 15px;
+        border-bottom-right-radius: 0;
+        max-width: 60%;
+        text-align: left;
+      }
+
+      .bot-text {
+        background: #1a1a1a;
+        padding: 10px 15px;
+        border-radius: 12px;
+        margin-left: 10px;
+        max-width: 70%;
+        color: white;
+      }
+
+      .bot-text p {
+        margin: 5px 0 0;
+        line-height: 1.6;
+      }
+
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #0f0f0f;
+        margin: 0;
+        padding: 0;
+        color: white;
+        align-items: center;
+      }
+
+      .chat-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      h2 {
+        text-align: center;
+        color: #d63447;
+      }
+
+      .input-form {
+        display: flex;
+        margin-top: 20px;
+      }
+
+      .input-form input {
+        flex: 1;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px 0 0 5px;
+      }
+
+      .input-form button {
+        padding: 10px 20px;
+        border: none;
+        background-color: #d63447;
+        color: white;
+        border-radius: 0 5px 5px 0;
+        cursor: pointer;
+      }
+
+      .messages {
+        margin-top: 30px;
+      }
+
+      .message-row {
+        display: flex;
+        margin-bottom: 15px;
+        align-items: flex-start;
+      }
+
+      .message-row.user {
+        justify-content: flex-end;
+      }
+
+      .message-row.bot {
+        justify-content: flex-start;
+      }
+
+      .message-row .bubble {
+        max-width: 70%;
+        background-color: #d63447;
+        color: white;
+        padding: 10px 15px;
+        border-radius: 15px;
+        border-bottom-right-radius: 0;
+      }
+
+      .message-row .bot-text {
+        background: none;
+        color: white;
+        padding-left: 10px;
+        max-width: 80%;
+      }
+
+      .message-row .bot-text p {
+        margin-top: 5px;
+        line-height: 1.4;
+      }
+
+      .avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+      }
+      .logo {
+        width: 250px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Top Logo Centered -->
+    <div style="text-align: center; margin-top: 20px">
+      <img
+        src="{{ url_for('static', filename='img/logo.png') }}"
+        alt="Logo"
+        class="logo"
+      />
+    </div>
+
+
+      <!-- Chat Messages -->
+      <div id="chat-box" class="messages">
+        {% for msg in messages %} {% if msg.role == 'user' %}
+        <div class="message-row user">
+          <div class="bubble">
+            <strong>You</strong>
+            <div style="margin-top: 5px">{{ msg.content }}</div>
+          </div>
+        </div>
+        {% else %}
+        <div class="message-row bot">
+          <img
+            src="{{ url_for('static', filename='img/logo.png') }}"
+            alt="Bot"
+            class="avatar"
+          />
+          <div class="bot-text">
+            <strong>Bot</strong>
+            <p>{{ msg.content }}</p>
+          </div>
+        </div>
+        {% endif %} {% endfor %}
+      </div>
+    </div>
+
+    <!-- Bottom Input Form -->
+<div
+style="
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #0f0f0f;
+  padding: 10px 20px;
+  border-top: 1px solid #333;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+"
+>
+<form method="POST" style="display: flex; width: 100%; max-width: 800px">
+  <input
+    type="text"
+    name="message"
+    placeholder="Type your question..."
+    required
+    style="
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #555;
+      border-radius: 20px;
+      background-color: transparent;
+      color: white;
+    "
+  />
+  <button
+    type="submit"
+    style="
+      margin-left: 10px;
+      background-color: #d63447;
+      border: none;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    "
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="white"
+      viewBox="0 0 24 24"
+      width="20"
+      height="20"
+    >
+      <path
+        d="M2 21l21-9L2 3v7l15 2-15 2v7z"
+        fill="white"
+      />
+    </svg>
+  </button>
+</form>
+</div>
+
+
+    <script>
+      // Auto-scroll to bottom
+      window.onload = function () {
+        const chatBox = document.getElementById("chat-box");
+        if (chatBox) {
+          chatBox.scrollTop = chatBox.scrollHeight;
+        }
+      };
+    </script>
+  </body>
+</html>

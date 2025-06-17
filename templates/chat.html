@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Chat</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      :root {
+        --accent: #d63447;
+        --background: #0f0f0f;
+        --scrollbar: #333;
+        --scroll-thumb: #555;
+      }
+
+      body {
+        font-family: Arial, sans-serif;
+        background-color: var(--background);
+        color: white;
+        margin: 0;
+        padding: 0;
+      }
+
+      /* CHAT AREA WIDTH */
+      .chat-container {
+        max-width: 1000px;
+        width: 90%;
+        margin: 0 auto;
+        padding: 20px;
+        padding-bottom: 100px; /* Leave space for floating input */
+        overflow-y: auto;
+        max-height: calc(100vh - 150px);
+      }
+
+      .logo {
+        width: 200px;
+        display: block;
+        margin: 30px auto;
+      }
+
+      .bubble {
+        background-color: var(--accent);
+        color: white;
+        padding: 10px 15px;
+        border-radius: 15px;
+        border-bottom-right-radius: 0;
+        max-width: 60%;
+        text-align: left;
+      }
+
+      .bot-text {
+        background: #1a1a1a;
+        padding: 10px 15px;
+        border-radius: 12px;
+        margin-left: 10px;
+        max-width: 70%;
+        color: white;
+      }
+
+      .bot-text p {
+        margin: 5px 0 0;
+        line-height: 1.6;
+      }
+
+      .message-row {
+        display: flex;
+        margin-bottom: 15px;
+        align-items: flex-start;
+        animation: fadeIn 0.3s ease-in-out;
+      }
+
+      .message-row.user {
+        justify-content: flex-end;
+      }
+
+      .message-row.bot {
+        justify-content: flex-start;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(5px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+      }
+
+      /* CUSTOM SCROLLBAR */
+      .chat-container::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      .chat-container::-webkit-scrollbar-track {
+        background: var(--scrollbar);
+      }
+
+      .chat-container::-webkit-scrollbar-thumb {
+        background-color: var(--scroll-thumb);
+        border-radius: 4px;
+      }
+
+      /* FLOATING INPUT BAR */
+      .floating-input {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: rgba(15, 15, 15, 0.9);
+        backdrop-filter: blur(4px);
+        padding: 10px 20px;
+        border-top: 0px solid #222;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 100;
+      }
+
+      .floating-input form {
+        display: flex;
+        width: 100%;
+        max-width: 1000px;
+      }
+
+      .floating-input input {
+        flex: 1;
+        padding: 12px;
+        border: 1px solid #444;
+        border-radius: 20px;
+        background-color: transparent;
+        color: white;
+      }
+
+      .floating-input button {
+        margin-left: 10px;
+        background-color: var(--accent);
+        border: none;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+      }
+
+      .floating-input button:hover {
+        background-color: #e74c3c;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Logo -->
+    <img
+      src="{{ url_for('static', filename='img/logo.png') }}"
+      alt="Logo"
+      class="logo"
+    />
+
+    <!-- Chat Messages -->
+    <div id="chat-box" class="chat-container">
+      {% for msg in messages %} {% if msg.role == 'user' %}
+      <div class="message-row user">
+        <div class="bubble">
+          <strong>You</strong>
+          <div style="margin-top: 5px">{{ msg.content }}</div>
+        </div>
+      </div>
+      {% else %}
+      <div class="message-row bot">
+        <img
+          src="{{ url_for('static', filename='img/logo.png') }}"
+          alt="Bot"
+          class="avatar"
+        />
+        <div class="bot-text">
+          <strong>Bot</strong>
+          {% if loop.last %}
+          <p id="typing-text" data-full="{{ msg.content }}"></p>
+          {% else %}
+          <p>{{ msg.content }}</p>
+          {% endif %}
+        </div>
+      </div>
+      {% endif %} {% endfor %}
+    </div>
+
+    <!-- Floating Input -->
+    <div class="floating-input">
+      <form method="POST">
+        <input
+          type="text"
+          name="message"
+          placeholder="Type your question..."
+          required
+        />
+        <button type="submit">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="white"
+            viewBox="0 0 24 24"
+            width="20"
+            height="20"
+          >
+            <path d="M2 21l21-9L2 3v7l15 2-15 2v7z" fill="white" />
+          </svg>
+        </button>
+      </form>
+    </div>
+
+    <script>
+      // Auto scroll to bottom
+      window.onload = function () {
+        const chatBox = document.getElementById("chat-box");
+        if (chatBox) {
+          chatBox.scrollTop = chatBox.scrollHeight;
+        }
+      };
+    </script>
+
+    <script>
+      // Auto scroll
+      window.onload = function () {
+        const chatBox = document.getElementById("chat-box");
+        if (chatBox) chatBox.scrollTop = chatBox.scrollHeight;
+
+        // Typing animation for the last message
+        const typingEl = document.getElementById("typing-text");
+        if (typingEl) {
+          const fullText = typingEl.getAttribute("data-full");
+          let index = 0;
+          const speed = 20; // typing speed in ms
+
+          function type() {
+            if (index < fullText.length) {
+              typingEl.innerHTML += fullText.charAt(index);
+              index++;
+              setTimeout(type, speed);
+              chatBox.scrollTop = chatBox.scrollHeight;
+            }
+          }
+
+          type();
+        }
+      };
+    </script>
+  </body>
+</html>
